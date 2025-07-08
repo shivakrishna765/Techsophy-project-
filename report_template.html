@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Personal Finance Report</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        h1, h2, h3 { color: #2c3e50; }
+        .summary { margin-bottom: 30px; }
+        .charts { display: flex; gap: 40px; margin-bottom: 30px; }
+        .chart-img { border: 1px solid #ccc; padding: 10px; background: #fafafa; }
+        table { border-collapse: collapse; width: 100%; margin-bottom: 30px; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+        th { background: #f0f0f0; }
+        .anomalies, .recommendations { margin-bottom: 30px; }
+    </style>
+</head>
+<body>
+    <h1>Personal Finance Report</h1>
+    <div class="summary">
+        <h2>User Summary</h2>
+        <p><strong>Total Income:</strong> {{ total_income | round(2) }}</p>
+        <p><strong>Total Expenses:</strong> {{ total_expenses | round(2) }}</p>
+        <p><strong>Savings:</strong> {{ savings | round(2) }}</p>
+    </div>
+    <div class="charts">
+        <div class="chart-img">
+            <h3>Spending by Category</h3>
+            <img src="{{ pie_chart_path }}" width="300">
+        </div>
+        <div class="chart-img">
+            <h3>Monthly Spending Trends</h3>
+            <img src="{{ bar_chart_path }}" width="400">
+        </div>
+    </div>
+    <div class="anomalies">
+        <h2>Anomalies</h2>
+        {% if anomalies is not none and not anomalies.empty %}
+        <table>
+            <tr><th>Date</th><th>Description</th><th>Category</th><th>Amount</th></tr>
+            {% for _, row in anomalies.iterrows() %}
+            <tr>
+                <td>{{ row['Date'].date() }}</td>
+                <td>{{ row['Description'] }}</td>
+                <td>{{ row['Category'] }}</td>
+                <td>{{ row['Amount'] }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% else %}
+        <p>No anomalies detected.</p>
+        {% endif %}
+    </div>
+    {% if budget_comparison %}
+    <div class="budget">
+        <h2>Budget Comparison</h2>
+        <table>
+            <tr><th>Category</th><th>Spent</th><th>Budget</th><th>Difference</th></tr>
+            {% for item in budget_comparison %}
+            <tr>
+                <td>{{ item.category }}</td>
+                <td>{{ item.spent | round(2) }}</td>
+                <td>{{ item.budget | round(2) }}</td>
+                <td>{{ item.diff | round(2) }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    {% endif %}
+    <div class="recommendations">
+        <h2>Top Recommendations</h2>
+        <ul>
+        {% for rec in recommendations %}
+            <li>{{ rec }}</li>
+        {% endfor %}
+        </ul>
+    </div>
+</body>
+</html> 
